@@ -1,0 +1,20 @@
+# Manual-install template. `setup.sh` generates and installs its own unit
+# with your real paths (venv python + repo root) — prefer that. If you copy
+# this file by hand, adjust ExecStart to your paths and copy it to
+# ~/.config/systemd/user/ then: systemctl --user daemon-reload.
+
+[Unit]
+Description=Voice dictation daemon (phonon, Wayland)
+After=graphical-session.target pipewire.service
+PartOf=graphical-session.target
+
+[Service]
+ExecStart=%h/.venv/bin/python %h/voice-dictation/main.py daemon
+Restart=on-failure
+RestartSec=3
+Environment=XDG_SESSION_TYPE=wayland
+# Session shutdown must never wait on the tray backend or the phonon child.
+TimeoutStopSec=5
+
+[Install]
+WantedBy=default.target

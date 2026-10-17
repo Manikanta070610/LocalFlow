@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Audio captures
+*.wav
+*.flac
+
+# Envs / packaging
+.venv/
+*.egg-info/
+build/
+dist/
+
+# OS junk
+.DS_Store
+
+# Local-only AI assistant files (keep on disk, out of the public repo)
+AGENTS.md
+CLAUDE.md
+.claude/
+
+# graphify knowledge-graph output (generated locally)
+graphify-out/

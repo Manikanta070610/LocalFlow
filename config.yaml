@@ -1,0 +1,64 @@
+# Voice dictation config (YAML). Wayland-only v1.
+# Edit then restart the daemon: systemctl --user restart voice-dictation
+
+# Displayed in KDE shortcut setup only. KDE owns the global grab on
+# Wayland (pynput can NOT grab keys there), so this string is
+# documentation — the real binding is created in
+# System Settings > Keyboard > Shortcuts > Custom.
+hotkey: "Super+Alt+D"
+
+server:
+  host: "127.0.0.1"
+  port: 8000
+  model: "phonon-2"
+  # Started as: phonon serve --port <port>  (binary resolved from PATH, else ~/.venv/bin/phonon)
+  auto_start: true
+  # Seconds to wait for /health before giving up (first run downloads model).
+  startup_timeout: 120
+  # Extra flags appended to `phonon serve`, e.g. ["--threads", "4"]
+  extra_args: []
+
+# Sent per-request as the `hotwords` multipart field
+# (server has no --hotwords flag; `phonon transcribe --hotwords` is CLI-only).
+# Up to 25 terms on Phonon-2. Example: ["Ada Lovelace", "systemd", "Kwin"]
+hotwords: []
+hotword_lambda: 2.0   # sent as `hotword_lambda` only when hotwords is non-empty
+
+audio:
+  sample_rate: 16000   # server resamples anyway; 16k mono is the native shape
+  channels: 1
+  device: null         # null = OS default mic; or an int index / name substring
+  max_seconds: 120     # auto-stop guard for forgotten toggles
+
+cleanup:
+  strip: true
+  collapse_whitespace: true
+  fix_space_before_punct: true
+  capitalize_first: false
+  add_trailing_space: true   # Wispr Flow style: ready for the next sentence
+
+typing:
+  # Insertion priority, tried in order:
+  #   1. auto_paste: wl-copy + synthetic Ctrl+V via /dev/uinput — works on
+  #      EVERY Wayland compositor (KWin has no virtual-keyboard protocol).
+  #      Needs the uinput setup (setup.sh / setup-uinput.sh) + `input` group.
+  #   2. tool: "wtype" tries wtype first — only on compositors with the
+  #      virtual-keyboard protocol (Sway, Hyprland, ...). "clipboard" skips it.
+  #   3. clipboard only: text is copied, you press Ctrl+V.
+  tool: "wtype"
+  auto_paste: true
+  paste_keys: "ctrl+v"
+  paste_delay_ms: 250
+  # Extra pause (ms) before typing so the focused app regains focus after toggle.
+  focus_delay_ms: 150
+  # Always mirror the result to the clipboard as a backup.
+  also_copy_to_clipboard: true
+
+indicator:
+  # pystray tray icon (grey=idle, red=recording, yellow=transcribing).
+  # Falls back to console-only log lines when no system tray exists.
+  tray: true
+
+ipc:
+  socket_path: "~/.cache/voice-dictation/dictation.sock"
+  pid_file: "~/.cache/voice-dictation/dictation.pid"

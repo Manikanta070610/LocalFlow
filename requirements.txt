@@ -1,0 +1,12 @@
+# voice-dictation (Wayland v2 with auto-paste)
+# Tested on: Debian 13, KDE Plasma 6, Python 3.12, CPU only.
+# sounddevice needs libportaudio2 (apt); evdev drives auto-paste via /dev/uinput.
+
+sounddevice==0.5.6
+evdev==2.0.0
+requests==2.34.2
+PyYAML==6.0.3
+numpy==2.4.6
+soundfile==0.14.0
+Pillow==12.2.0
+pystray==0.19.5
